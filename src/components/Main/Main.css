@@ -204,7 +204,24 @@
   border-radius: 15px;
   max-width: 100%;
   word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-x: auto; /* Scroll if content is too wide */
 }
+.chat-message.ai .ai-response-text ul,
+.chat-message.ai .ai-response-text ol {
+  padding-left: 25px;
+  list-style-type: disc;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-message.ai .ai-response-text li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+  list-style-position: inside; /* ye important hai */
+}
+
 
 .chat-message.ai .ai-response-text img {
   margin-right: 10px;
