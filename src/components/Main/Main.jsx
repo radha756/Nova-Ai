@@ -4,6 +4,7 @@ import { assets } from '../../assets/assets';
 import { Context } from "../../context/context.jsx";
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+  
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
@@ -18,6 +19,7 @@ const Main = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [character, setCharacter] = useState(assets.char1); // Default character
+  const [characterName, setCharacterName] = useState("Fluffy"); // Default cute name
   const [showCharacterOptions, setShowCharacterOptions] = useState(false);
 
   const chatHistoryRef = useRef(null);
@@ -25,20 +27,16 @@ const Main = () => {
   const handleSend = () => {
     if (Input.trim() === "") return;
 
-    const formatInstruction = `
-      Please provide the answer in a well-structured format with:
-      - Bold section headings (like **Key Components of...)
-      - Bullet points with bold titles (like * **Meaning:** *)
-      - Use markdown formatting for bold and bullet styles
-    `;
+    // Modify the instruction to keep the response short and clear, like ChatGPT
+    const formatInstruction = `Please provide a clear, concise, and well-structured answer to the question. Keep the answer brief, relevant, and to the point, like ChatGPT responses. Avoid unnecessary details, and only provide what is directly requested.`;
 
     const finalPrompt = `${Input}\n\n${formatInstruction}`;
     setLastPrompt(Input);
 
     setChatHistory((prev) => [...prev, { sender: "user", message: Input }]);
 
-    onSent(finalPrompt);
-    setInput('');
+    onSent(finalPrompt); // Send the formatted prompt
+    setInput(''); // Reset the input field
   };
 
   const handleMicClick = () => {
@@ -62,14 +60,6 @@ const Main = () => {
     recognition.onend = () => {
       setIsListening(false);
     };
-  };
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setChatHistory((prev) => [...prev, { sender: "user", message: "📷 Image uploaded", image: imageUrl }]);
-    }
   };
 
   const handleCardClick = (question) => {
@@ -100,26 +90,8 @@ const Main = () => {
     <div className='main'>
       <div className="nav">
         <p>Nova AI</p>
-        <div className="character-selector">
-          {/* Removed user icon and added character selection */}
-          <img
-            src={character}
-            alt="Character Icon"
-            onClick={() => setShowCharacterOptions(!showCharacterOptions)}
-            className="user-icon"
-          />
-          {showCharacterOptions && (
-            <div className="character-dropdown">
-              <p>Choose Character</p>
-              <img src={assets.char1} alt="Char 1" onClick={() => setCharacter(assets.char1)} />
-              <img src={assets.char2} alt="Char 2" onClick={() => setCharacter(assets.char2)} />
-              <img src={assets.char3} alt="Char 3" onClick={() => setCharacter(assets.char3)} />
-              <img src={assets.char4} alt="Char 4" onClick={() => setCharacter(assets.char4)} />
-            </div>
-          )}
-        </div>
       </div>
-
+      
       <div className="main-container">
         {chatHistory.length > 0 && (
           <div className="chat-history" ref={chatHistoryRef}>
@@ -128,9 +100,6 @@ const Main = () => {
                 {chat.sender === "user" ? (
                   <div>
                     <p><strong>You:</strong> {chat.message}</p>
-                    {chat.image && (
-                      <img src={chat.image} alt="Uploaded" className="uploaded-img" />
-                    )}
                   </div>
                 ) : (
                   <div className="ai-response">
@@ -188,16 +157,6 @@ const Main = () => {
               placeholder='Ask anything...'
             />
             <div>
-              <input
-                type="file"
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="imageInput"
-                onChange={handleImageUpload}
-              />
-              <label htmlFor="imageInput">
-                <img src={assets.gallery_icon} alt="Gallery" />
-              </label>
               <img onClick={handleMicClick} src={assets.mic_icon} alt="Mic" />
               <img onClick={handleSend} src={assets.send_icon} alt="Send" />
             </div>
