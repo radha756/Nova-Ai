@@ -349,6 +349,17 @@
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
+  .chat-message.ai .ai-response-text {
+    max-width: 100%;   /* full width */
+    margin-left: 0;    /* no extra left space */
+    padding: 10px;     /* thoda padding maintain */
+  }
+
+  .chat-message.user p {
+    max-width: 100%;
+  }
+}
+@media (max-width: 480px) {
   .main .greet p:first-child { font-size: 28px; }
   .main .greet p:last-child { font-size: 14px; }
 }
@@ -410,4 +421,4 @@
   line-height: 1.5;
   box-sizing: border-box;
   margin-left: 20px;        /* left se gap */
-}  
+}   
