@@ -281,7 +281,7 @@
 .search-box textarea::placeholder { color: #666666; opacity: 1; }
 .main.dark .search-box textarea::placeholder { color: #aaaaaa; }
 
-.credits {
+/* .credits {
   text-align: center;
   font-size: 12px;
   color: #1995AD;
@@ -290,7 +290,7 @@
 }
 .main.dark .credits {
   color: #a9d6e5;
-}
+} */
 .chat-message.ai .ai-response-text {
   max-width: 100%;
   word-wrap: break-word;

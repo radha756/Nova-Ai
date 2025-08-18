@@ -188,9 +188,9 @@ Answer the question in ${userLang}.
             Nova AI may display incorrect information, so double-check its response.
           </p>
         </div>
-        <div className="credits">
+        {/* <div className="credits">
           Built with ❤️ by Radha
-        </div>
+        </div> */}
       </div>
     </div>
   );
