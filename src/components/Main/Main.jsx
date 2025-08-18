@@ -46,16 +46,25 @@ const Main = () => {
     setGreetSub(subGreetings[subIndex]);
   }, []);
 
+  // Language detection
+  const detectLanguage = (text) => {
+    const hindiRegex = /[\u0900-\u097F]/;
+    return hindiRegex.test(text) ? "Hindi" : "English";
+  };
+
   const handleSend = () => {
     if (Input.trim() === "") return;
+
+    const userLang = detectLanguage(Input);
 
     const formatInstruction = `
 You are Nova AI, a highly intelligent and friendly assistant.
 Answer the user's question clearly, concisely, and professionally.
-- Keep answers short and relevant.
-- Provide examples or code if necessary.
-- Avoid unnecessary details.
-- Always be polite and precise.
+Keep answers short and relevant.
+Provide examples or code if necessary.
+Avoid unnecessary details.
+Always be polite and precise.
+Answer the question in ${userLang}.
 `;
 
     const finalPrompt = chatHistory.map(chat => {
@@ -165,9 +174,15 @@ Answer the user's question clearly, concisely, and professionally.
               placeholder='Ask anything...'
               rows="1"
             />
-            <div>
-              <img onClick={handleMicClick} src={assets.mic_icon} alt="Mic" />
-            </div>
+            <div className="input-buttons">
+  <img onClick={handleMicClick} src={assets.mic_icon} alt="Mic" />
+
+  {/* Mobile Send Icon */}
+  <button className="send-btn" onClick={handleSend}>
+    <img src={assets.send_icon} alt="Send" />
+  </button>
+</div>
+
           </div>
           <p className='bottom-info'>
             Nova AI may display incorrect information, so double-check its response.
