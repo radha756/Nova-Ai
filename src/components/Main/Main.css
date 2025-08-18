@@ -410,7 +410,7 @@
   color: #1995AD;
   padding: 10px 15px;
   border-radius: 15px;
-  max-width: 80%;          /* box ka max width */
+  max-width: 100%;          /* box ka max width */
   word-wrap: break-word;    /* lambi words wrap ho jaye */
   overflow-wrap: break-word; 
   overflow-x: hidden;       /* horizontal scroll na aaye */
