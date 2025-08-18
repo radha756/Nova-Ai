@@ -4,7 +4,7 @@ import { assets } from '../../assets/assets';
 import { Context } from "../../context/context.jsx";
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-  
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
@@ -15,28 +15,32 @@ recognition.maxAlternatives = 1;
 
 const Main = () => {
   const { onSent, response, isLoading, error, Input, setInput } = useContext(Context);
-  const [lastPrompt, setLastPrompt] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [isListening, setIsListening] = useState(false);
-  const [character, setCharacter] = useState(assets.char1); // Default character
-  const [characterName, setCharacterName] = useState("Fluffy"); // Default cute name
-  const [showCharacterOptions, setShowCharacterOptions] = useState(false);
-
+  const [theme, setTheme] = useState("light");
   const chatHistoryRef = useRef(null);
 
   const handleSend = () => {
     if (Input.trim() === "") return;
 
-    // Modify the instruction to keep the response short and clear, like ChatGPT
-    const formatInstruction = `Please provide a clear, concise, and well-structured answer to the question. Keep the answer brief, relevant, and to the point, like ChatGPT responses. Avoid unnecessary details, and only provide what is directly requested.`;
+    // Build prompt with chat history for context
+    const formatInstruction = `
+You are Nova AI, a highly intelligent and friendly assistant.
+Answer the user's question clearly, concisely, and professionally.
+- Keep answers short and relevant.
+- Provide examples or code if necessary.
+- Avoid unnecessary details.
+- Always be polite and precise.
+`;
 
-    const finalPrompt = `${Input}\n\n${formatInstruction}`;
-    setLastPrompt(Input);
+    const finalPrompt = chatHistory.map(chat => {
+      return chat.sender === "user" ? `User: ${chat.message}` : `AI: ${chat.message}`;
+    }).join("\n") + `\nUser: ${Input}\nAI:${formatInstruction}`;
 
-    setChatHistory((prev) => [...prev, { sender: "user", message: Input }]);
-
-    onSent(finalPrompt); // Send the formatted prompt
-    setInput(''); // Reset the input field
+    // Add user message to chat history
+    setChatHistory(prev => [...prev, { sender: "user", message: Input }]);
+    onSent(finalPrompt);  // Backend call
+    setInput('');
   };
 
   const handleMicClick = () => {
@@ -62,34 +66,38 @@ const Main = () => {
     };
   };
 
-  const handleCardClick = (question) => {
-    setInput(question);
-    setTimeout(() => handleSend(), 100);
-  };
-
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleSend();
     }
   };
 
+  // Add AI response to chat history
   useEffect(() => {
-    if (response && lastPrompt) {
-      setChatHistory((prev) => [...prev, { sender: "ai", message: response }]);
-      setLastPrompt('');
+    if (response) {
+      setChatHistory(prev => [...prev, { sender: "ai", message: response }]);
     }
   }, [response]);
 
+  // Scroll chat to bottom
   useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
     }
   }, [chatHistory]);
 
+  const handleThemeToggle = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   return (
-    <div className='main'>
+    <div className={`main ${theme}`}>
       <div className="nav">
         <p>Nova AI</p>
+        <button className="theme-toggle" onClick={handleThemeToggle}>
+          {theme === "light" ? <FaMoon /> : <FaSun />}
+        </button>
       </div>
       
       <div className="main-container">
@@ -98,50 +106,25 @@ const Main = () => {
             {chatHistory.map((chat, index) => (
               <div key={index} className={`chat-message ${chat.sender}`}>
                 {chat.sender === "user" ? (
-                  <div>
-                    <p><strong>You:</strong> {chat.message}</p>
-                  </div>
+                  <p>{chat.message}</p>
                 ) : (
-                  <div className="ai-response">
-                    <img src={assets.gemini_icon} alt="AI" className="ai-photo" />
-                    <div className="ai-response-text"
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(marked.parse(chat.message))
-                      }}
-                    ></div>
-                  </div>
+                  <div
+                    className="ai-response-text"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(marked.parse(chat.message))
+                    }}
+                  ></div>
                 )}
               </div>
             ))}
           </div>
         )}
 
-        {!response && !isLoading && !Input && chatHistory.length === 0 && (
-          <>
-            <div className="greet">
-              <p><span>Greetings, Dev!</span></p>
-              <p>How can I assist you today?</p>
-            </div>
-
-            <div className="cards">
-              <div className="card" onClick={() => handleCardClick("What’s my next step to achieve my goal?")}>
-                <p>What’s my next step to achieve my goal?</p>
-                <img src={assets.compass_icon} alt="" />
-              </div>
-              <div className="card" onClick={() => handleCardClick("What is the best way to handle errors in this code?")}>
-                <p>What is the best way to handle errors in this code?</p>
-                <img src={assets.bulb_icon} alt="" />
-              </div>
-              <div className="card" onClick={() => handleCardClick("What’s one thing I can do better tomorrow?")}>
-                <p>What’s one thing I can do better tomorrow?</p>
-                <img src={assets.message_icon} alt="" />
-              </div>
-              <div className="card" onClick={() => handleCardClick("Improve the readability of the following code")}>
-                <p>Improve the readability of the following code</p>
-                <img src={assets.code_icon} alt="" />
-              </div>
-            </div>
-          </>
+        {chatHistory.length === 0 && !isLoading && (
+          <div className="greet">
+            <p><span>Greetings, Dev!</span></p>
+            <p>How can I assist you today?</p>
+          </div>
         )}
 
         {isLoading && <p className="loading">Loading...</p>}
@@ -149,25 +132,32 @@ const Main = () => {
 
         <div className="main-bottom">
           <div className={`search-box ${isListening ? "listening" : ""}`}>
-            <input
-              onChange={(e) => setInput(e.target.value)}
+            <textarea
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
               onKeyDown={handleKeyDown}
               value={Input}
-              type="text"
               placeholder='Ask anything...'
+              rows="1"
             />
             <div>
               <img onClick={handleMicClick} src={assets.mic_icon} alt="Mic" />
-              <img onClick={handleSend} src={assets.send_icon} alt="Send" />
             </div>
           </div>
           <p className='bottom-info'>
-            Nova AI may display incorrect information, including about people, so double-check its response.
+            Nova AI may display incorrect information, so double-check its response.
           </p>
         </div>
+        <div className="credits">
+  Built with ❤️ by Radha
+</div>
       </div>
     </div>
   );
 };
 
 export default Main;
+

@@ -1,46 +1,41 @@
-import { createContext, useState, useCallback, useEffect } from "react";
-import { main } from "../config/gemini"; 
+import { createContext, useState, useCallback } from "react";
+import { main } from "../config/gemini";
 
 export const Context = createContext();
 
 const ContextProvider = ({ children }) => {
   const [response, setResponse] = useState("");
   const [recentPrompt, setRecentPrompt] = useState("");
-  const [showResult, setShowResult] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [Input, setInput] = useState(""); 
-  const [resultData, setResultData] = useState(""); 
+  const [Input, setInput] = useState("");
+  const [resultData, setResultData] = useState("");
 
   const onSent = useCallback(async (prompt) => {
-    console.log("Prompt in onSent:", prompt);  // Debugging: Log the prompt
-    setIsLoading(true);  // Set loading to true when a request is made
+    console.log("Prompt in onSent:", prompt);
+    setIsLoading(true);
     setError(null);
+    setRecentPrompt(prompt);
+
     try {
-      const result = await main(prompt);  // Only pass a string here
+      const result = await main(prompt);
       setResponse(result);
+      setResultData(result);
     } catch (err) {
       setError(err.message || "An error occurred");
-      console.error("Error in AI response:", err);
     } finally {
-      setIsLoading(false);  // Set loading to false once response is received or error occurs
+      setIsLoading(false);
     }
-  }, []);  
-  
-  // useEffect(() => {
-  //   onSent("tell me about fast and furious?");
-  // }, [onSent]);
+  }, []);
 
-  // Handle input change and set placeholder empty when user types
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
+  const handleInputChange = (e) => setInput(e.target.value);
 
   const clearChat = () => {
     setInput("");
     setResponse("");
+    setResultData("");
   };
-  
+
   const contextValue = {
     response,
     isLoading,
@@ -49,15 +44,12 @@ const ContextProvider = ({ children }) => {
     Input,
     setInput,
     handleInputChange,
-    clearChat
+    clearChat,
+    recentPrompt,
+    resultData
   };
-  
 
-  return (
-    <Context.Provider value={contextValue}>
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
 
 export default ContextProvider;
