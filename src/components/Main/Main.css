@@ -297,3 +297,72 @@
   white-space: pre-wrap;
   overflow-x: auto;
 }
+/* Greeting Container */
+.main .greet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  margin: 40px 0;
+  animation: fadeIn 0.8s ease-in-out;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Main Greeting Text (greetMain) */
+.main .greet p:first-child {
+  font-size: 42px; /* Big and bold */
+  font-weight: 600;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #1995AD, #A1D6E2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sub Greeting Text (greetSub) */
+.main .greet p:last-child {
+  font-size: 20px; /* Smaller than main greeting */
+  font-weight: 400;
+  color: #666; /* Light theme text color */
+}
+
+/* Dark Theme */
+.main.dark .greet p:first-child {
+  background: linear-gradient(45deg, #89c2d9, #61a5c2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.main.dark .greet p:last-child {
+  color: #ccc;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .main .greet p:first-child { font-size: 28px; }
+  .main .greet p:last-child { font-size: 14px; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .main .greet p:first-child { font-size: 36px; }
+  .main .greet p:last-child { font-size: 16px; }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+  .main .greet p:first-child { font-size: 48px; }
+  .main .greet p:last-child { font-size: 18px; }
+}
+
+@media (min-width: 993px) {
+  .main .greet p:first-child { font-size: 56px; }
+  .main .greet p:last-child { font-size: 20px; }
+}

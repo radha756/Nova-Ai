@@ -18,12 +18,37 @@ const Main = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [theme, setTheme] = useState("light");
+  const [greetMain, setGreetMain] = useState("");
+  const [greetSub, setGreetSub] = useState("");
   const chatHistoryRef = useRef(null);
+
+  // Dynamic greetings
+  const mainGreetings = [
+    "Greetings, Dev! Ready to code?",
+    "Hello there! How can I help you today?",
+    "Hey! Ask me anything.",
+    "Hi! I'm Nova AI, your assistant.",
+    "Welcome back! What do you want to explore today?"
+  ];
+
+  const subGreetings = [
+    "Let's create something amazing.",
+    "Your AI buddy is here to help.",
+    "Ask questions or get coding tips!",
+    "Knowledge is power. Let's start!",
+    "Need assistance? I'm all ears."
+  ];
+
+  useEffect(() => {
+    const mainIndex = Math.floor(Math.random() * mainGreetings.length);
+    const subIndex = Math.floor(Math.random() * subGreetings.length);
+    setGreetMain(mainGreetings[mainIndex]);
+    setGreetSub(subGreetings[subIndex]);
+  }, []);
 
   const handleSend = () => {
     if (Input.trim() === "") return;
 
-    // Build prompt with chat history for context
     const formatInstruction = `
 You are Nova AI, a highly intelligent and friendly assistant.
 Answer the user's question clearly, concisely, and professionally.
@@ -37,9 +62,8 @@ Answer the user's question clearly, concisely, and professionally.
       return chat.sender === "user" ? `User: ${chat.message}` : `AI: ${chat.message}`;
     }).join("\n") + `\nUser: ${Input}\nAI:${formatInstruction}`;
 
-    // Add user message to chat history
     setChatHistory(prev => [...prev, { sender: "user", message: Input }]);
-    onSent(finalPrompt);  // Backend call
+    onSent(finalPrompt);
     setInput('');
   };
 
@@ -73,14 +97,12 @@ Answer the user's question clearly, concisely, and professionally.
     }
   };
 
-  // Add AI response to chat history
   useEffect(() => {
     if (response) {
       setChatHistory(prev => [...prev, { sender: "ai", message: response }]);
     }
   }, [response]);
 
-  // Scroll chat to bottom
   useEffect(() => {
     if (chatHistoryRef.current) {
       chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
@@ -122,8 +144,8 @@ Answer the user's question clearly, concisely, and professionally.
 
         {chatHistory.length === 0 && !isLoading && (
           <div className="greet">
-            <p><span>Greetings, Dev!</span></p>
-            <p>How can I assist you today?</p>
+            <p>{greetMain}</p>
+            <p>{greetSub}</p>
           </div>
         )}
 
@@ -152,12 +174,11 @@ Answer the user's question clearly, concisely, and professionally.
           </p>
         </div>
         <div className="credits">
-  Built with ❤️ by Radha
-</div>
+          Built with ❤️ by Radha
+        </div>
       </div>
     </div>
   );
 };
 
 export default Main;
-
