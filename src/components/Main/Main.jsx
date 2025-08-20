@@ -22,7 +22,6 @@ const Main = () => {
   const [greetSub, setGreetSub] = useState("");
   const chatHistoryRef = useRef(null);
 
-  // Dynamic greetings
   const mainGreetings = [
     "Greetings, Dev! Ready to code?",
     "Hello there! How can I help you today?",
@@ -46,7 +45,6 @@ const Main = () => {
     setGreetSub(subGreetings[subIndex]);
   }, []);
 
-  // Language detection
   const detectLanguage = (text) => {
     const hindiRegex = /[\u0900-\u097F]/;
     return hindiRegex.test(text) ? "Hindi" : "English";
@@ -175,22 +173,21 @@ Answer the question in ${userLang}.
               rows="1"
             />
             <div className="input-buttons">
-  <img onClick={handleMicClick} src={assets.mic_icon} alt="Mic" />
-
-  {/* Mobile Send Icon */}
-  <button className="send-btn" onClick={handleSend}>
-    <img src={assets.send_icon} alt="Send" />
-  </button>
-</div>
-
+              <img
+                onClick={handleMicClick}
+                src={assets.mic_icon}
+                alt="Mic"
+                className="mic-btn"
+              />
+              <button className="send-btn" onClick={handleSend}>
+                <img src={assets.send_icon} alt="Send" />
+              </button>
+            </div>
           </div>
           <p className='bottom-info'>
             Nova AI may display incorrect information, so double-check its response.
           </p>
         </div>
-        {/* <div className="credits">
-          Built with ❤️ by Radha
-        </div> */}
       </div>
     </div>
   );
